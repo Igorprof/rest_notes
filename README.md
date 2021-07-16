@@ -1,2 +1,1 @@
-# Fibr
-education ecosystem and knowledge base
+# rest_notes
