@@ -1,3 +1,4 @@
+from rest_framework.generics import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from todo.models import Project, Todo
 from todo.serializers import ProjectModelSerializer, TodoModelSerializer
@@ -32,3 +33,8 @@ class TodoModelViewSet(ModelViewSet):
       if project_for_search:
          return Todo.objects.filter(project__title=project_for_search)
       return Todo.objects.all()
+
+   def delete(self, request, pk=None):
+      todo = get_object_or_404(Todo, pk=pk)
+
+      todo.delete()
