@@ -26,3 +26,9 @@ class TodoModelViewSet(ModelViewSet):
    queryset = Todo.objects.all()
    serializer_class = TodoModelSerializer
    pagination_class = TodoLimitOffsetPagination
+
+   def get_queryset(self):
+      project_for_search = self.request.query_params.get('project_name', None)
+      if project_for_search:
+         return Todo.objects.filter(project__title=project_for_search)
+      return Todo.objects.all()
