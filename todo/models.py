@@ -15,4 +15,6 @@ class Todo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
-
+    def delete(self):
+        self.is_active = False
+        self.save()
