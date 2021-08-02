@@ -13,7 +13,7 @@ class App extends React.Component {
    }
 
    componentDidMount() {
-    axios.get('http://127.0.0.1:8000/api/users')
+    axios.get('http://127.0.0.1:8000/api/users/')
         .then(response => {
             const users = response.data.results
                 this.setState(
@@ -27,6 +27,7 @@ class App extends React.Component {
     render () {
         return (
             <div>
+                
                 <UserList users={this.state.users} />
             </div>
         )
