@@ -4,7 +4,8 @@ import axios from 'axios'
 import './App.css'
 import UserList from './components/Users.js'
 import TodoList from './components/Todos.js'
-import {HashRouter, Route, Link, Switch} from 'react-router-dom'
+import ProjectList from './components/Projects.js'
+import {HashRouter, Route, Link, Switch, Redirect} from 'react-router-dom'
 
 const NotFound404 = ({ location }) => {
     return (
@@ -36,12 +37,22 @@ class App extends React.Component {
             )
         }).catch(error => console.log(error))
 
-        axios.get('http://127.0.0.1:8000/api/todos/')
+    axios.get('http://127.0.0.1:8000/api/todos/')
         .then(response => {
             const todos = response.data.results
                 this.setState(
                 {
                     'todos': todos
+                }
+            )
+        }).catch(error => console.log(error))
+    
+    axios.get('http://127.0.0.1:8000/api/projects/')
+        .then(response => {
+            const projects = response.data.results
+                this.setState(
+                {
+                    'projects': projects
                 }
             )
         }).catch(error => console.log(error))
@@ -59,11 +70,16 @@ class App extends React.Component {
                   <li>
                     <Link to='/todos'>Todos</Link>
                   </li>
+                  <li>
+                    <Link to='/projects'>Projects</Link>
+                  </li>
                 </ul>
               </nav>
                 <Switch>
                   <Route exact path='/' component={() => <UserList users={this.state.users} />}  />
                   <Route exact path='/todos' component={() => <TodoList todos={this.state.todos} />} />
+                  <Route exact path='/projects' component={() => <ProjectList projects={this.state.projects} />} />              
+                  <Redirect from='/users' to='/' />    
                   <Route component={NotFound404} />
                 </Switch>
               </HashRouter>
