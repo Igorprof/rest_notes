@@ -14,16 +14,32 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.permissions import AllowAny
 from userapp.views import UserModelViewSet
 from todo.views import ProjectModelViewSet, TodoModelViewSet
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 router = DefaultRouter()
 router.register('users', UserModelViewSet, basename='users')
 router.register('projects', ProjectModelViewSet, basename='projects')
 router.register('todos', TodoModelViewSet, basename='todos')
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title='Rest_notes',
+      default_version='v1',
+      description="Documentation to out project",
+      contact=openapi.Contact(email="admin@admin.local"),
+      license=openapi.License(name="MIT License"),
+   ),
+   public=True,
+   permission_classes=(AllowAny, )
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +47,8 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token),
     path('api/', include(router.urls)),
+
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
