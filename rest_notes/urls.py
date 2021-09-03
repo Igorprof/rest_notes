@@ -24,6 +24,8 @@ from todo.views import ProjectModelViewSet, TodoModelViewSet
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from graphene_django.views import GraphQLView
+
 router = DefaultRouter()
 router.register('users', UserModelViewSet, basename='users')
 router.register('projects', ProjectModelViewSet, basename='projects')
@@ -51,4 +53,5 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('graphql/', GraphQLView.as_view(graphiql=True)),
 ]
