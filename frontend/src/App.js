@@ -6,6 +6,8 @@ import UserList from './components/Users.js'
 import TodoList from './components/Todos.js'
 import ProjectList from './components/Projects.js'
 import LoginForm from './components/LoginForm.js'
+import ProjectForm from './components/ProjectForm.js'
+import TodoForm from './components/TodoForm.js'
 import {HashRouter, Route, Link, Switch, Redirect} from 'react-router-dom'
 
 const NotFound404 = ({ location }) => {
@@ -87,6 +89,67 @@ class App extends React.Component {
    componentDidMount() {   
     this.get_token_from_storage()
    }   
+
+   deleteProject(id) {
+    const headers = this.get_headers()
+
+    axios.delete('http://127.0.0.1:8000/api/projects/' + id, {headers})
+    .then(response => {
+        this.get_data()
+    }).catch(error => {
+      console.log(error)
+    })
+   }
+
+   deleteTodo(id) {
+    const headers = this.get_headers()
+
+    axios.delete('http://127.0.0.1:8000/api/todos/' + id, {headers})
+    .then(response => {
+        this.get_data()
+    }).catch(error => {
+      console.log(error)
+    })
+   }
+
+   createProject(title, url, users) {
+     console.log(title, url, users);
+
+     const headers = this.get_headers()
+
+     axios.post('http://127.0.0.1:8000/api/projects/', 
+      {
+        'title': title, 
+        'repository_url': url,
+        'users': users
+      },
+      {headers})
+        .then(response => {
+            this.get_data()
+        }).catch(error => {
+          console.log(error)
+        })
+   }
+
+   createTodo(text, project, user) {
+     console.log(text, project, user)
+
+     const headers = this.get_headers()
+
+     axios.post('http://127.0.0.1:8000/api/todos/', 
+      {
+        'text': text,
+        'is_active': true,
+        'project': project,
+        'user': user
+      },
+      {headers})
+        .then(response => {
+            this.get_data()
+        }).catch(error => {
+          console.log('blen' + error)
+        })
+   }
    
    get_headers() {
      let headers = {
@@ -140,15 +203,23 @@ class App extends React.Component {
                     <Link to='/projects'>Projects</Link>
                   </li>
                   <li>
+                    <Link to='/projects/create'>Create Project</Link>
+                  </li>
+                  <li>
+                    <Link to='/todos/create'>Create Todo</Link>
+                  </li>
+                  <li>
                     {this.is_auth() ? <button onClick={() => this.logout()}>Logout</button> : <Link to='/login'>Login</Link>} 
                   </li>
                 </ul>
               </nav>
                 <Switch>
                   <Route exact path='/' component={() => <UserList users={this.state.users} />}  />
-                  <Route exact path='/todos' component={() => <TodoList todos={this.state.todos} />} />
-                  <Route exact path='/projects' component={() => <ProjectList projects={this.state.projects} />} />   
-                  <Route exact path='/login' component={() => <LoginForm get_token={(login, password) => this.get_token(login, password)} />} />                */}
+                  <Route exact path='/todos' component={() => <TodoList todos={this.state.todos} deleteTodo={(id) => this.deleteTodo(id)} />} />
+                  <Route exact path='/projects' component={() => <ProjectList projects={this.state.projects} deleteProject={(id) => this.deleteProject(id)} />} />
+                  <Route exact path='/projects/create' component={() => <ProjectForm createProject={(title, url, users) => this.createProject(title, url, users)} users={this.state.users}/>} /> 
+                  <Route exact path='/todos/create' component={() => <TodoForm createTodo={(text, project, user) => this.createTodo(text, project, user)} projects={this.state.projects} users={this.state.users}/>} />   
+                  <Route exact path='/login' component={() => <LoginForm get_token={(login, password) => this.get_token(login, password)} />} />                
                   <Redirect from='/users' to='/' />    
                   <Route component={NotFound404} />
                 </Switch>
