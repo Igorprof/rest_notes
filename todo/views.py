@@ -1,7 +1,7 @@
 from rest_framework.generics import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from todo.models import Project, Todo
-from todo.serializers import ProjectModelSerializer, TodoModelSerializer
+from todo.serializers import ProjectModelSerializer, TodoModelSerializer, ProjectModelSerializerV2, TodoModelSerializerV2
 from rest_framework.pagination import LimitOffsetPagination
 
 
@@ -13,7 +13,6 @@ class TodoLimitOffsetPagination(LimitOffsetPagination): # по 20 заметок
 
 
 class ProjectModelViewSet(ModelViewSet):
-   serializer_class = ProjectModelSerializer
    pagination_class = ProjectLimitOffsetPagination
 
    def get_queryset(self):
@@ -22,10 +21,13 @@ class ProjectModelViewSet(ModelViewSet):
          return Project.objects.filter(title__icontains=name_for_search)
       return Project.objects.all()
 
+   def get_serializer_class(self):
+      if self.request.version == 'v2':
+         return ProjectModelSerializerV2
+      return ProjectModelSerializer
+
 
 class TodoModelViewSet(ModelViewSet):
-   queryset = Todo.objects.all()
-   serializer_class = TodoModelSerializer
    pagination_class = TodoLimitOffsetPagination
 
    def get_queryset(self):
@@ -33,6 +35,11 @@ class TodoModelViewSet(ModelViewSet):
       if project_for_search:
          return Todo.objects.filter(project__title=project_for_search)
       return Todo.objects.all()
+
+   def get_serializer_class(self):
+      if self.request.version == 'v2':
+         return TodoModelSerializerV2
+      return TodoModelSerializer
 
    def delete(self, request, pk=None):
       todo = get_object_or_404(Todo, pk=pk)

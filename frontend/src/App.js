@@ -117,7 +117,7 @@ class App extends React.Component {
 
      const headers = this.get_headers()
 
-     axios.post('http://127.0.0.1:8000/api/projects/', 
+     axios.post('http://127.0.0.1:8000/api/projects/?version=v2', 
       {
         'title': title, 
         'repository_url': url,
@@ -136,7 +136,7 @@ class App extends React.Component {
 
      const headers = this.get_headers()
 
-     axios.post('http://127.0.0.1:8000/api/todos/', 
+     axios.post('http://127.0.0.1:8000/api/todos/?version=v2', 
       {
         'text': text,
         'is_active': true,
@@ -147,7 +147,7 @@ class App extends React.Component {
         .then(response => {
             this.get_data()
         }).catch(error => {
-          console.log('blen' + error)
+          console.log(error)
         })
    }
    
